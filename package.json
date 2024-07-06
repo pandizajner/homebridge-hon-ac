@@ -1,10 +1,10 @@
 {
   "private": true,
-  "displayName": "Homebridge Hon AC",
+  "displayName": "homebridge-hon-ac",
   "name": "homebridge-hon-ac",
   "version": "1.0.0",
-  "description": "Homebridge plugin for Haier AC using HON API",
-  "license": "MIT",
+  "description": "Homebridge plugin for Haier AC using hOn API",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/pandizajner/homebridge-hon-ac.git"
@@ -18,28 +18,26 @@
   },
   "main": "dist/index.js",
   "scripts": {
+    "lint": "eslint src/**/*.ts --max-warnings=0",
+    "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "lint": "tslint -p tsconfig.json",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin",
-    "homebridge",
-    "homekit",
-    "HON",
-    "Haier",
-    "AC"
+    "homebridge-plugin"
   ],
-  "dependencies": {
-    "axios": "^0.21.1"
-  },
   "devDependencies": {
-    "@types/node": "^14.14.31",
-    "rimraf": "^3.0.2",
-    "tslint": "^6.1.3",
-    "typescript": "^4.1.3"
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "eslint": "^8.57.0",
+    "homebridge": "^1.8.0",
+    "nodemon": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
-  "author": "Konrad Kolasa",
-  "homepage": "https://github.com/pandizajner/homebridge-hon-ac#readme"
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
 }

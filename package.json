@@ -1,16 +1,16 @@
 {
   "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "displayName": "Homebridge Hon AC",
+  "name": "homebridge-hon-ac",
   "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
-  "license": "Apache-2.0",
+  "description": "Homebridge plugin for Haier AC using HON API",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/pandizajner/homebridge-hon-ac.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/pandizajner/homebridge-hon-ac/issues"
   },
   "engines": {
     "node": "^18.17.0 || ^20.9.0",
@@ -18,13 +18,18 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint src/**/*.ts --max-warnings=0",
-    "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
+    "lint": "eslint src --ext .ts",
+    "watch": "tsc -w",
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "homebridge",
+    "homekit",
+    "HON",
+    "Haier",
+    "AC"
   ],
   "devDependencies": {
     "@types/node": "^20.12.7",
@@ -36,5 +41,10 @@
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
-  }
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "author": "",
+  "homepage": "https://github.com/pandizajner/homebridge-hon-ac#readme"
 }

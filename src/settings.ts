@@ -1,2 +1,2 @@
-export const PLATFORM_NAME = 'HonAcPlatform';
+export const PLATFORM_NAME = 'HonACPlatform';
 export const PLUGIN_NAME = 'homebridge-hon-ac';

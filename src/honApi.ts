@@ -46,4 +46,39 @@ export class HonAPI {
 
     return response.data;
   }
+
+  async setActive(deviceId: string, active: boolean): Promise<void> {
+    if (!this.accessToken) {
+      await this.authenticate();
+    }
+
+    const url = `/appliance/v1/devices/${deviceId}/command`;
+    const data = {
+      command: 'setActive',
+      parameters: {
+        active,
+      },
+    };
+
+    await this.client.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    });
+  }
+
+  async getActive(deviceId: string): Promise<boolean> {
+    if (!this.accessToken) {
+      await this.authenticate();
+    }
+
+    const url = `/appliance/v1/devices/${deviceId}/status`;
+    const response = await this.client.get(url, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    });
+
+    return response.data.active;
+  }
 }

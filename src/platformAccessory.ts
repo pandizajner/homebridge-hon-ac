@@ -1,56 +1,57 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import { HonAcPlatform } from './platform';
+import { HonPlatform } from './platform';
 
-export class HonAcPlatformAccessory {
+export class HonPlatformAccessory {
   private service: Service;
 
   constructor(
-    private readonly platform: HonAcPlatform,
+    private readonly platform: HonPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
-    this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Haier')
-      .setCharacteristic(this.platform.Characteristic.Model, 'hOn AC')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.serialNumber);
 
-    this.service = this.accessory.getService(this.platform.Service.Thermostat) || 
-                   this.accessory.addService(this.platform.Service.Thermostat);
+    const { hap } = this.platform.api;
 
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
+    this.accessory.getService(hap.Service.AccessoryInformation)!
+      .setCharacteristic(hap.Characteristic.Manufacturer, 'Haier')
+      .setCharacteristic(hap.Characteristic.Model, 'AC')
+      .setCharacteristic(hap.Characteristic.SerialNumber, accessory.context.device.id);
 
-    this.service.getCharacteristic(this.platform.Characteristic.CurrentHeatingCoolingState)
-      .onGet(this.handleCurrentHeatingCoolingStateGet.bind(this));
+    this.service = this.accessory.getService(hap.Service.HeaterCooler) ||
+      this.accessory.addService(hap.Service.HeaterCooler);
 
-    this.service.getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
-      .onSet(this.handleTargetHeatingCoolingStateSet.bind(this));
+    this.service.setCharacteristic(hap.Characteristic.Name, accessory.context.device.name);
 
-    this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
-      .onGet(this.handleCurrentTemperatureGet.bind(this));
+    this.service.getCharacteristic(hap.Characteristic.Active)
+      .onSet(this.setActive.bind(this))
+      .onGet(this.getActive.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.TargetTemperature)
-      .onSet(this.handleTargetTemperatureSet.bind(this));
+    this.service.getCharacteristic(hap.Characteristic.CurrentHeaterCoolerState)
+      .onGet(this.getCurrentHeaterCoolerState.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
-      .onSet(this.handleTemperatureDisplayUnitsSet.bind(this));
+    this.service.getCharacteristic(hap.Characteristic.TargetHeaterCoolerState)
+      .onSet(this.setTargetHeaterCoolerState.bind(this))
+      .onGet(this.getTargetHeaterCoolerState.bind(this));
   }
 
-  handleCurrentHeatingCoolingStateGet(): CharacteristicValue {
-    return this.accessory.context.device.currentState;
+  async setActive(value: CharacteristicValue) {
+    await this.platform.honApi.setActive(this.accessory.context.device.id, value as boolean);
   }
 
-  handleTargetHeatingCoolingStateSet(value: CharacteristicValue) {
-    this.accessory.context.device.targetState = value;
+  async getActive(): Promise<CharacteristicValue> {
+    return this.platform.honApi.getActive(this.accessory.context.device.id);
   }
 
-  handleCurrentTemperatureGet(): CharacteristicValue {
-    return this.accessory.context.device.currentTemperature;
+  async getCurrentHeaterCoolerState(): Promise<CharacteristicValue> {
+    // Implement the logic to get the current state
+    return 1; // example state
   }
 
-  handleTargetTemperatureSet(value: CharacteristicValue) {
-    this.accessory.context.device.targetTemperature = value;
+  async setTargetHeaterCoolerState(value: CharacteristicValue) {
+    // Implement the logic to set the target state
   }
 
-  handleTemperatureDisplayUnitsSet(value: CharacteristicValue) {
-    this.accessory.context.device.displayUnits = value;
+  async getTargetHeaterCoolerState(): Promise<CharacteristicValue> {
+    // Implement the logic to get the target state
+    return 1; // example state
   }
 }

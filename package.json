@@ -1,60 +1,32 @@
 {
-  "private": true,
-  "displayName": "homebridge-hon-ac",
   "name": "homebridge-hon-ac",
   "version": "1.0.0",
-  "description": "Homebridge plugin for Haier AC using hOn API",
-  "license": "Apache-2.0",
+  "description": "Homebridge plugin for Haier AC",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pandizajner/homebridge-hon-ac.git"
   },
-  "bugs": {
-    "url": "https://github.com/pandizajner/homebridge-hon-ac/issues"
-  },
-  "engines": {
-    "node": "^18.17.0 || ^20.9.0",
-    "homebridge": "^1.6.0"
-  },
-  "main": "dist/index.js",
-  "scripts": {
-    "lint": "eslint src/**/*.ts --max-warnings=0",
-    "watch": "npm run build && npm link && nodemon",
-    "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build"
-  },
   "keywords": [
     "homebridge-plugin"
   ],
-  "devDependencies": {
-    "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
-    "eslint": "^8.57.0",
-    "homebridge": "^1.8.0",
-    "nodemon": "^3.1.0",
-    "rimraf": "^5.0.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
-  },
+  "author": "pandizajner",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.4.0"
+    "axios": "^0.21.4",
+    "homebridge": "^1.3.4",
+    "typescript": "^4.5.2"
   },
-  "homebridge": {
-    "schema": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "title": "Email",
-          "type": "string",
-          "required": true
-        },
-        "password": {
-          "title": "Password",
-          "type": "string",
-          "required": true
-        }
-      }
-    }
+  "devDependencies": {
+    "@types/node": "^14.14.41",
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "eslint": "^7.29.0",
+    "rimraf": "^3.0.2"
   }
 }

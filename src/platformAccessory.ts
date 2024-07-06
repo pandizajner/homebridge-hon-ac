@@ -1,57 +1,35 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import { HonPlatform } from './platform';
+import { HonACPlatform } from './platform';
 
-export class HonPlatformAccessory {
+export class HonACPlatformAccessory {
   private service: Service;
 
   constructor(
-    private readonly platform: HonPlatform,
+    private readonly platform: HonACPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
+    this.accessory.getService(this.platform.Service.AccessoryInformation)!
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Haier')
+      .setCharacteristic(this.platform.Characteristic.Model, 'AC')
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.macAddress);
 
-    const { hap } = this.platform.api;
+    this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
 
-    this.accessory.getService(hap.Service.AccessoryInformation)!
-      .setCharacteristic(hap.Characteristic.Manufacturer, 'Haier')
-      .setCharacteristic(hap.Characteristic.Model, 'AC')
-      .setCharacteristic(hap.Characteristic.SerialNumber, accessory.context.device.id);
+    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
-    this.service = this.accessory.getService(hap.Service.HeaterCooler) ||
-      this.accessory.addService(hap.Service.HeaterCooler);
-
-    this.service.setCharacteristic(hap.Characteristic.Name, accessory.context.device.name);
-
-    this.service.getCharacteristic(hap.Characteristic.Active)
-      .onSet(this.setActive.bind(this))
-      .onGet(this.getActive.bind(this));
-
-    this.service.getCharacteristic(hap.Characteristic.CurrentHeaterCoolerState)
-      .onGet(this.getCurrentHeaterCoolerState.bind(this));
-
-    this.service.getCharacteristic(hap.Characteristic.TargetHeaterCoolerState)
-      .onSet(this.setTargetHeaterCoolerState.bind(this))
-      .onGet(this.getTargetHeaterCoolerState.bind(this));
+    this.service.getCharacteristic(this.platform.Characteristic.Active)
+      .onGet(this.handleActiveGet.bind(this))
+      .onSet(this.handleActiveSet.bind(this));
   }
 
-  async setActive(value: CharacteristicValue) {
-    await this.platform.honApi.setActive(this.accessory.context.device.id, value as boolean);
+  handleActiveGet(): CharacteristicValue {
+    const isActive = this.accessory.context.device.isActive;
+    return isActive ? this.platform.Characteristic.Active.ACTIVE : this.platform.Characteristic.Active.INACTIVE;
   }
 
-  async getActive(): Promise<CharacteristicValue> {
-    return this.platform.honApi.getActive(this.accessory.context.device.id);
-  }
-
-  async getCurrentHeaterCoolerState(): Promise<CharacteristicValue> {
-    // Implement the logic to get the current state
-    return 1; // example state
-  }
-
-  async setTargetHeaterCoolerState(value: CharacteristicValue) {
-    // Implement the logic to set the target state
-  }
-
-  async getTargetHeaterCoolerState(): Promise<CharacteristicValue> {
-    // Implement the logic to get the target state
-    return 1; // example state
+  async handleActiveSet(value: CharacteristicValue) {
+    const isActive = value === this.platform.Characteristic.Active.ACTIVE;
+    await this.platform.honApi.setDeviceActive(this.accessory.context.device, isActive);
+    this.accessory.context.device.isActive = isActive;
   }
 }

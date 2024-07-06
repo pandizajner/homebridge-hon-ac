@@ -1,10 +1,13 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig } from 'homebridge';
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { HonPlatformAccessory } from './platformAccessory';
 import { HonAPI } from './honApi';
+import { HonACPlatformAccessory } from './platformAccessory';
 
-export class HonPlatform implements DynamicPlatformPlugin {
-  public readonly accessories: PlatformAccessory[] = [];
+export class HonACPlatform implements DynamicPlatformPlugin {
+  public readonly Service: typeof Service = this.api.hap.Service;
+  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+
+  private readonly accessories: PlatformAccessory[] = [];
   public readonly honApi: HonAPI;
 
   constructor(
@@ -14,7 +17,8 @@ export class HonPlatform implements DynamicPlatformPlugin {
   ) {
     this.honApi = new HonAPI(config.email, config.password);
 
-    this.api.on('didFinishLaunching', () => {
+    this.api.on('didFinishLaunching', async () => {
+      await this.honApi.authenticate();
       this.discoverDevices();
     });
   }
@@ -27,15 +31,17 @@ export class HonPlatform implements DynamicPlatformPlugin {
     try {
       const devices = await this.honApi.getDevices();
       for (const device of devices) {
-        const uuid = this.api.hap.uuid.generate(device.id);
+        const uuid = this.api.hap.uuid.generate(device.macAddress);
         const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
         if (existingAccessory) {
-          new HonPlatformAccessory(this, existingAccessory);
+          this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+          new HonACPlatformAccessory(this, existingAccessory);
         } else {
+          this.log.info('Adding new accessory:', device.name);
           const accessory = new this.api.platformAccessory(device.name, uuid);
           accessory.context.device = device;
-          new HonPlatformAccessory(this, accessory);
+          new HonACPlatformAccessory(this, accessory);
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         }
       }

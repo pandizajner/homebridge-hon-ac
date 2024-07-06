@@ -45,6 +45,6 @@
   "dependencies": {
     "axios": "^0.21.1"
   },
-  "author": "",
+  "author": "Konrad Kolasa",
   "homepage": "https://github.com/pandizajner/homebridge-hon-ac#readme"
 }
